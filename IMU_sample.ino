@@ -58,6 +58,22 @@
 #define QUATERNION_W_LOW 0x42
 #define QUATERNION_W_HIGH 0x43
 
+   double status;
+   double who_am_i;
+   double Status;
+
+   double roll;
+   double rollL;
+   double rollH;
+
+   double pitch;
+   double pitchL;
+   double pitchH;
+
+   double yaw;
+   double yawL;
+   double yawH;
+
 uint8_t readRegister8(uint8_t Reg, double ft){
    uint8_t value;
   Wire.beginTransmission(ADDRESS);
@@ -73,7 +89,7 @@ uint8_t readRegister8(uint8_t Reg, double ft){
    Wire.beginTransmission(ADDRESS);
    Wire.requestFrom(ADDRESS, 1);
    if(Wire.available() == false){ //stuck
-      Serial.print("ft" + ft);
+      Serial.print("error");
    }
 
    #if ARDUINO >= 100
@@ -85,9 +101,19 @@ uint8_t readRegister8(uint8_t Reg, double ft){
 
    Wire.endTransmission();
 
-   Serial.print("value" + value);
+   return value;
 }
-
+void setup(){
+  Serial.begin(9600);
+  Serial.println("a");
+  Wire.begin();
+  Serial.println("B");
+  //who_am_i = readRegister8(WHO_AM_I, -1);
+  //Status = readRegister8(STATUS, -1);
+  if(!Wire.available()){
+    Serial.println("get in shit");
+  }
+}
 void loop() {
    rollL = readRegister8(ROLL_LOW, rollL);
    rollH = readRegister8(ROLL_HIGH, rollH);
@@ -103,5 +129,10 @@ void loop() {
    yawH = readRegister8(YAW_HIGH, yawH);
 
    yaw = (yawL+(256*yawH))*180/32767;
-   Serial.print("roll : " + roll + " yaw : " + yaw + " pitch : " + pitch);
+   Serial.print("roll : ");
+   Serial.print(roll);
+   Serial.print(", pitch : ");
+   Serial.print(pitch);
+   Serial.print(", yaw : ");
+   Serial.println(yaw);
 }
